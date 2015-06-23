@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mmap_lib.h"
-
+// I have added this comment 
 #ifdef SINGLE
 #define REAL float
 #else
