@@ -24,7 +24,7 @@ char elefilename[FILENAMESIZE];
 char nodefilename[FILENAMESIZE];
 REAL minlength;// min length could be passed from command line
 };
-static int num_ele=0;// to keep track of total no of elements 
+static int num_ele=0;// to keep track of total no of elements
 static int num_nodes=0;// to keep track of total no of nodes
 /* structure for elements*/
 struct element{
