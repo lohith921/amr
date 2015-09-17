@@ -11,6 +11,7 @@
  
 #define maxlength 1.0
 #define minlength 0.5
+//Adding dummy line to check git commits
 void display_map(struct map_t *first){
  printf("displaying the map\n");
  struct map_t *temp;
