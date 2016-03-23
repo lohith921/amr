@@ -42,34 +42,64 @@
 #else
 #define REAL double
 #endif
-
-struct map_t *map_create() {
-   struct map_t *m;
-   m=(struct map_t *)malloc(sizeof(struct map_t));
+// The following function creates a map for nodes.
+struct map_node *create_nodemap() {
+   struct map_node *m;
+   m = (struct map_node *)malloc(sizeof(struct map_node));
    if(!m)
       return NULL;
-   m->point=0;
-   m->xandy=(REAL *)malloc(sizeof(REAL));
-   m->xandy[0]=0.0;
-   m->xandy[1]=0.0;
-   m->nxt=NULL;
+   m->point = 0;
+   m->xandy = (REAL *)malloc(sizeof(REAL));
+   m->xandy[0] = 0.0;
+   m->xandy[1] = 0.0;
+   m->nxt = NULL;
    return m;
 }
 
-void map_free(struct map_t *map) {
+// The following function creates a map for neighbors.
+struct map_neighbor *create_neighbormap() {
+   struct map_neighbor *m;
+   m = (struct map_neighbor *)malloc(sizeof(struct map_node));
+   if(!m)
+      return NULL;
+   m->t_num = 0;
+   m->nbs = (int *)malloc(sizeof(int));
+   m->nbs[0] = 0;
+   m->nbs[1] = 0;
+   m->nbs[2] = 0;
+   m->nxt = NULL;
+   return m;
+}
+
+// The following function frees node map.
+void map_freenode(struct map_node *map) {
    if(!map)
       return;
-   struct map_t *m, *mp;
-   m=map;
+   struct map_node *m, *mp;
+   m = map;
    while(m!=NULL) {
-      mp=m;
-      m=m->nxt;
+      mp = m;
+      m = m->nxt;
       free(mp);
    }
 }
 
-void map_set(struct map_t *m,int pt,REAL coords[]) {
-   struct map_t *map;
+// The following function frees neighbor map.
+void map_freeneighbor(struct map_neighbor *map) {
+   if(!map)
+      return;
+   struct map_neighbor *m, *mp;
+   m = map;
+   while(m!=NULL) {
+      mp = m;
+      m = m->nxt;
+      free(mp);
+   }
+}
+
+// The following function is used to set node entries in node map.
+void map_setnode(struct map_node *m,int pt,REAL coords[]) {
+   struct map_node *map;
    // First time inserting
     if(m->point==0){
     m->point=pt;
@@ -87,7 +117,7 @@ void map_set(struct map_t *m,int pt,REAL coords[]) {
         }// #1 ends here
       // #2 inserting at the last element
       if(map->nxt==NULL) {
-          map->nxt=map_create();
+          map->nxt = create_nodemap();
          //map->nxt=map_create();
          if(!map->nxt){
             return;
@@ -101,9 +131,49 @@ void map_set(struct map_t *m,int pt,REAL coords[]) {
       }// #2 ends here
    }
 }
-void display_map(struct map_t *first){
+
+// The following function is used to set neighbor entries in neighbor map.
+void map_setneighbor(struct map_neighbor *m,int t,int neighbs[]) {
+   struct map_neighbor *map;
+   // First time inserting
+    if(m->t_num == 0){
+    m->t_num = t;
+    m->nbs[0] = neighbs[0];
+    m->nbs[1] = neighbs[1];
+    m->nbs[2] = neighbs[2];
+    m->nxt = NULL;
+    return;
+    }
+    // #1 if pt matches any of the points already present
+    for(map = m;;map = map->nxt) {
+      if(t == map->t_num){
+          map->nbs[0] = neighbs[0]; 
+	  map->nbs[1] = neighbs[1];
+	  map->nbs[2] = neighbs[2];           
+          return;
+        }// #1 ends here
+      // #2 inserting at the last element
+      if(map->nxt == NULL) {
+          map->nxt = create_neighbormap();
+         //map->nxt=map_create();
+         if(!map->nxt){
+            return;
+         }
+	 map = map->nxt;
+	 map->t_num = t;
+	 map->nbs[0] = neighbs[0];
+	 map->nbs[1] = neighbs[1];
+	 map->nbs[2] = neighbs[2];
+	 map->nxt = NULL;
+         return;
+      }// #2 ends here
+   }
+}
+
+// The following function prints the node map.
+void display_map(struct map_node *first){
  printf("displaying the map\n");
- struct map_t *temp;
+ struct map_node *temp;
  temp=first;
  if(temp!=NULL){
   while(temp!=NULL){
@@ -116,11 +186,24 @@ void display_map(struct map_t *first){
   return; 
  }
 }
-REAL* map_get(struct map_t *m,int pt) {
-   struct map_t *map;
-   for(map=m;map!=NULL;map=map->nxt) {
-     if(map->point==pt){ //!strcasecmp(name,map->name)) {
+
+// The following function is used to get a node from the node map.
+REAL* map_getnode(struct map_node *m,int pt) {
+   struct map_node *map;
+   for(map = m;map != NULL;map = map->nxt) {
+     if(map->point == pt){ //!strcasecmp(name,map->name)) {
        return map->xandy;
+     }
+   }
+   return NULL;
+}
+
+// The following function is used to get neibhors from the neighbor map.
+int* map_getneighbors(struct map_neighbor *m,int t) {
+   struct map_neighbor *map;
+   for(map = m;map != NULL;map = map->nxt) {
+     if(map->t_num == t){ //!strcasecmp(name,map->name)) {
+       return map->nbs;
      }
    }
    return NULL;
