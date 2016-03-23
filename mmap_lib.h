@@ -39,14 +39,25 @@
 #ifndef MMAP_LIB_H
 #define MMAP_LIB_H
 
-struct map_t {
-   struct map_t *nxt;
+struct map_node {
+   struct map_node *nxt;
    int point;
    REAL *xandy;
 };
 
-struct map_t *map_create();
-void map_free(struct map_t *map);
-void map_set(struct map_t *m,int pt,REAL coords[]);
-REAL *map_get(struct map_t *m,int pt);
+struct map_neighbor{
+	struct map_neighbor *nxt;
+	int t_num;
+	int* nbs;
+	};
+
+struct map_node *create_nodemap();
+struct map_neighbor *create_neighbormap();
+void map_freenode(struct map_node *map);
+void map_freeneighbor(struct map_neighbor *map);
+void map_setnode(struct map_node *m,int pt,REAL coords[]);
+void map_setneighbor(struct map_neighbor *m, int t, int neighbs[]);
+REAL* map_getnode(struct map_node *m,int pt);
+int* map_getneighbors(struct map_neighbor *m,int tnum);
+
 #endif
