@@ -158,29 +158,29 @@ void print_elements(struct element *e){
 printf("#: %d, Nodes %d, %d, %d\n",e->ele_no,e->nodes[0],e->nodes[1],e->nodes[2]);
 }
 /**********************************************************************/
-void process(struct element *el,struct map_t *node_map, int tol){
+void process(struct element *el,struct map_node *node_map,struct map_neighbor *nbr_map, int tol){
  //printf("entered process for the element: %d\n",el->ele_no);
   struct element *temp1;
   //struct map_t *temp2;
-  int i,j,eleno,vertexes[3]; 
-  if(el->ele_no==-1){// for head element
-   temp1=el->next;
+  int i,j,eleno,vertices[3]; 
+  if(el->ele_no == -1){// for head element
+   temp1 = el->next;
   }
   else{
-   temp1=el;
+   temp1 = el;
   }
   //temp2=node_map;
   //eleno=temp1->ele_no;
   REAL *vertexA,*vertexB,*vertexC;
   REAL *midAB, *midBC, *midCA, length;
-  vertexA=(REAL *)malloc(2*sizeof(REAL));
-  vertexB=(REAL *)malloc(2*sizeof(REAL));
-  vertexC=(REAL *)malloc(2*sizeof(REAL));
-  while(temp1!=NULL){
-   if(node_map!=NULL){
-   vertexA=map_get(node_map,temp1->nodes[0]);
-   vertexB=map_get(node_map,temp1->nodes[1]);
-   vertexC=map_get(node_map,temp1->nodes[2]);
+  vertexA = (REAL *)malloc(2*sizeof(REAL));
+  vertexB = (REAL *)malloc(2*sizeof(REAL));
+  vertexC = (REAL *)malloc(2*sizeof(REAL));
+  while(temp1 != NULL){
+   if(node_map != NULL){
+   vertexA = map_getnode(node_map,temp1->nodes[0]);
+   vertexB = map_getnode(node_map,temp1->nodes[1]);
+   vertexC = map_getnode(node_map,temp1->nodes[2]);
   }
   else{
    printf("The structures are not properly initiated\n");
@@ -199,9 +199,9 @@ void process(struct element *el,struct map_t *node_map, int tol){
       new->nodes[i] = 0;
     }
     midAB = (REAL *)malloc(2*sizeof(REAL));
-    midAB = compute_mid(vertexA,vertexB);
+    midAB = compute_mid(vertexA, vertexB);
     num_nodes++;
-    map_set(node_map,num_nodes,midAB);
+    map_setnode(node_map,num_nodes,midAB);
     new->ele_no = ++num_ele;
     new->nodes[0] = num_nodes;
     new->nodes[1] = temp1->nodes[1];
@@ -227,29 +227,29 @@ void process(struct element *el,struct map_t *node_map, int tol){
    }
    midBC = compute_mid(vertexB,vertexC);
    num_nodes++;
-   map_set(node_map,num_nodes,midBC);
-   new->ele_no=++num_ele;
-   new->nodes[0]=temp1->nodes[0];
-   new->nodes[1]=num_nodes;
-   new->nodes[2]=temp1->nodes[2];
-   temp1->nodes[2]=num_nodes;
-   new->next=temp1->next;
-   temp1->next=new;//new triangles A,B,mid and mid,C,A are formed
+   map_setnode(node_map,num_nodes,midBC);
+   new->ele_no = ++num_ele;
+   new->nodes[0] = temp1->nodes[0];
+   new->nodes[1] = num_nodes;
+   new->nodes[2] = temp1->nodes[2];
+   temp1->nodes[2] = num_nodes;
+   new->next = temp1->next;
+   temp1->next = new;//new triangles A,B,mid and mid,C,A are formed
    printf("inserted new element %d\n",new->ele_no);
-   temp1=temp1->next;
+   temp1 = temp1->next;
   }
  // printf("calling calc_length CA for element %d\n",temp1->ele_no);
-  length=calc_length(vertexC,vertexA);
-  if(length>tol){
+  length = calc_length(vertexC,vertexA);
+  if(length > tol){
 //   printf("91\n");
-   midCA=(REAL *)malloc(2*sizeof(REAL));
-   new=(struct element *)malloc(sizeof(struct element));
-   new->next=NULL;
-   new->ele_no=0;
-   for(i=0;i<3;i++){
-     new->nodes[i]=0;
+   midCA = (REAL *)malloc(2*sizeof(REAL));
+   new = (struct element *)malloc(sizeof(struct element));
+   new->next = NULL;
+   new->ele_no = 0;
+   for(i = 0;i < 3;i++){
+     new->nodes[i] = 0;
    }
-   midCA=compute_mid(vertexC,vertexA); 
+   midCA = compute_mid(vertexC,vertexA); 
    num_nodes++;
    map_set(node_map,num_nodes,midCA);
    new->ele_no=++num_ele;
@@ -392,16 +392,16 @@ int main(int argc, char **argv)
       for (j = 1; argv[i][j] != '\0'; j++) {
         if (argv[i][j] == 'e') {
           m->eleindi = 1;
-	 	}
+	}
         else if (argv[i][j] == 'n') {
           m->nodeindi = 1;
-	 	}
-	 	else if (argv[i][j] == 'p') {
+	}
+	else if (argv[i][j] == 'p') {
           m->neighborindi = 1;
-	 	}
+	}
         else {
           info();
-	 	}
+	}
       }// inner for loop ends here
     } 
     else {
@@ -486,10 +486,11 @@ int main(int argc, char **argv)
 //printf("about to display the elements\n");
 // display_elements(head_ele);
 
- fnode=fopen(m->nodefilename,"r");
+// following code reads node file and creates node map.
+ fnode = fopen(m->nodefilename,"r");
 // printf("3\n");
  // creating a map of nodes
- nodes = map_create();
+ nodes = create_nodemap();
 
  firstline = readline(data,fnode,m->nodefilename);
  nnode = atoi(strtok(firstline,delim)); 
@@ -510,14 +511,14 @@ int main(int argc, char **argv)
 		}
  	 }
  //printf("vertices array is %f %f\n",vertices[0],vertices[1]);
- map_set(nodes,node_no,vertices);
+ map_setnode(nodes,node_no,vertices);
  }
  //display_map(nodes);
  
  //* Write code for reading neigh file and create a neighbor map *//
  fneigh=fopen(m->neighborfilename,"r");
  // creating a map of neighbors
- neighbs = map_create();
+ neighbs = create_neighbormap();
  firstline = readline(data,fnode,m->neighborfilename);
  nele = atoi(strtok(firstline,delim)); 
  //printf("no of nodes are %d\n",nnode);
@@ -534,13 +535,13 @@ int main(int argc, char **argv)
                nbs[j++] = atof(token);
             }
  	 }
-    map_set(neighbs,node_no,nbs);
+    map_setneighbor(neighbs,node_no,nbs);
  }
  
  
  
  // printf("going to call process method\n");
- process(head_ele,nodes,neihbs,0.9);
+ process(head_ele,nodes,neighbs,0.9);
  printf("processing finished no of elements are: %d no of nodes are %d\n",num_ele,num_nodes);
  printf("Displaying elements after processing\n");
  display_elements(head_ele);
