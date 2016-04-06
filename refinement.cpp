@@ -404,15 +404,17 @@ int main(int argc, char **argv)
 	// printf("0.25\n");
 	REAL vertices[2];
 	int nbs[3];
-	m = (struct amrgeo *)malloc(sizeof(struct amrgeo));
+	m = new struct amrgeo();
+	//m = (struct amrgeo *)malloc(sizeof(struct amrgeo));
 	m->nodefilename[0] = '\0';
 	m->elefilename[0] = '\0';
 	
 	//printf("0.35\n");
-	FILE *fnode, *fele;
+	//FILE *fnode, *fele;
+	ifstream fnode, fele;
 	
-	head_ele = (struct element *)malloc(sizeof(struct element));
-	head_node = (struct node *)malloc(sizeof(struct node));
+	head_ele = new element();
+	head_node = new node();
 	head_ele->next = NULL;
 	head_ele->ele_no = -1;
 	head_node->next = NULL;
@@ -441,26 +443,27 @@ int main(int argc, char **argv)
  
 	 //printf("&filename[strlen(filename) - 5] is %s\n",&filename[strlen(filename) - 5]);
 	 if(!strcmp(&filename[strlen(filename) - 5], ".node")) { //printf("2\n"); 
-	   strcpy(m->nodefilename,filename);
-	   memcpy(m->elefilename,&filename,(strlen(filename)-5)); //  strcpy(root,m->elefilename);  
-	   strcat(m->elefilename,".ele");
-	   m->elefilename[strlen(m->elefilename)+1] = '\0';	   
+	 	strcpy(m->nodefilename,filename);
+		memcpy(m->elefilename,&filename,(strlen(filename)-5)); //  strcpy(root,m->elefilename);  
+	 	strcat(m->elefilename,".ele");
+	 	m->elefilename[strlen(m->elefilename)+1] = '\0';	   
 	 }
 	 else if(!strcmp(&filename[strlen(filename) - 4], ".ele")) {
 	  // printf("2.5\n");
-	   strcpy(m->elefilename,filename);
-	   memcpy(m->nodefilename,&filename,(strlen(filename)-4));
-	   //strcpy(root,m->nodefilename);
-	   strcat(m->nodefilename,".node");  
-	   m->nodefilename[strlen(m->nodefilename)+1] = '\0';	  
+	 	strcpy(m->elefilename,filename);
+	 	memcpy(m->nodefilename,&filename,(strlen(filename)-4));
+	 	//strcpy(root,m->nodefilename);
+	 	strcat(m->nodefilename,".node");  
+	 	m->nodefilename[strlen(m->nodefilename)+1] = '\0';	  
 	 }
 	 else
 	 	info();
+	 
 	 printf("The file names are: %s and %s\n", m->elefilename, m->nodefilename);
-	 root  =  (char *)malloc(sizeof(filename));
+	 root  = new char[sizeof(filename)];
 	 root[0]  =  '\0';
 	 strcpy(root,filename);
-	 fele = fopen(m->elefilename,"r");
+	 fele.open(m->elefilename,ios::in);
 	 //while(fnode!=  NULL){
 	 /*do{
 	 	printf("%s\n",data);
@@ -468,40 +471,31 @@ int main(int argc, char **argv)
 	 }while(fgets(data,200,fnode)!=  NULL);*/
 	 
 	 //following code is to read .ele file and create linked list of elements
-	 firstline  =  readline(data,fele,m->elefilename);
-	 nele  =  atoi(strtok(firstline,delim)); 
+	 //firstline  =  readline(data,fele,m->elefilename);
+	 fele >> nele; 
 	 emap = create_edgemap();
 	// printf("2.75\n");
-	 for(i  =  1;i  <=   nele;i++){
+	 for(i = 1;i <= nele;i++){
 	 	struct element *temp;
-	 	temp  =  (struct element *)malloc(sizeof(struct element));
+	 	temp  =  new element();//(struct element *)malloc(sizeof(struct element));
 	 	temp->next  =  NULL;
-	  	firstline  =  readline(data,fele,m->elefilename);
-	       // printf("first line is %s\n",firstline);
-	 	token  =  strtok(firstline,delim);
-	 	temp->ele_no  =  atoi(token);
-	 	j = 0;
-	 	while(token !=   NULL){
-	 		token  =  strtok(NULL,delim);
-			if(j !=   3)
-	 		 temp->nodes[j++]  =  atoi(token);
-	 	 }
-		 insert_element(temp); 	
-		 set_nedgemap(emap,temp->nodes);
+	  	fele >> temp->eleno >> temp->nodes[0] >> temp->nodes[1] >> temp->nodes[2] >> std::endl;
+		insert_element(temp); 	
+		set_nedgemap(emap,temp->nodes);
 	 }
 	//printf("about to display the elements\n");
 	// display_elements(head_ele);
 	
 	// following code reads node file and creates node map.
-	 fnode  =  fopen(m->nodefilename,"r");
+	 fnode.open(m->nodefilename,iso::in);
 	// printf("3\n");
 	 // creating a map of nodes
 	 nodes  =  create_nodemap();
-	 firstline  =  readline(data, fnode, m->nodefilename);
-	 nnode  =  atoi(strtok(firstline,delim)); 
+	 //firstline  =  readline(data, fnode, m->nodefilename);
+	 fnode >> nnode; //  =  atoi(strtok(firstline,delim)); 
 	 //printf("no of nodes are %d\n",nnode);
 	 num_nodes  =  nnode;
-	 for(i  =  1;i  <=   nnode;i++){
+	 for(i = 1; i <= nnode; i++){
 	 	firstline  =  readline(data,fnode,m->nodefilename);
 	 	token  =  strtok(firstline,delim);
 	       // printf("token extracted is %s\n",token);
@@ -519,9 +513,6 @@ int main(int argc, char **argv)
 	 map_setnode(nodes,node_no,vertices);
 	 }
 	 //display_map(nodes);
-	 
-	 
-	 
 	 // printf("going to call process method\n");
 	 process(head_ele, nodes, emap, 0.9);
 	 printf("processing finished no of elements are: %d no of nodes are %d\n",num_ele,num_nodes);
@@ -568,3 +559,13 @@ int main(int argc, char **argv)
 	    map_setneighbor(neighbs,node_no,nbs);
 	 }
 	 */
+/*firstline  =  readline(data,fele,m->elefilename);
+	       // printf("first line is %s\n",firstline);
+	 	token  =  strtok(firstline,delim);
+	 	temp->ele_no  =  atoi(token);
+	 	j = 0;
+	 	while(token !=   NULL){
+	 		token  =  strtok(NULL,delim);
+			if(j !=   3)
+	 		 temp->nodes[j++]  =  atoi(token);
+	 	 }*/
