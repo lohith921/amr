@@ -22,6 +22,13 @@ struct edge_map{
 	int key1, key2;
 	std::vector<int> node_nums;
 	struct edge_map *nxt;
+	edge_map(){
+		key1 = 0;
+		key2 = 0;
+		nxt = NULL;
+		node_nums.push_back(-1);
+		node_nums.push_back(-1);
+	}
 };
 
 // The following are related to node map.
@@ -31,7 +38,7 @@ void map_setnode(struct node_map *m,int pt,REAL coords[]);
 REAL* map_getnode(struct node_map *m,int pt);
 
 // The following are related to edge map.
-struct edge_map* create_edgemap();
+//struct edge_map *create_edgemap();
 void free_edgemap(struct edge_map *map);
 void set_edgemap(struct edge_map *m,int k1, int k2,int node);
 void set_nedgemap(struct edge_map *m, int nodes[3]);
