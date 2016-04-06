@@ -5,13 +5,14 @@
 
 #define FILENAMESIZE 2048
 #define INPUTLINESIZE 1024
+#include <string>
 
 /* Structure to hold properties */
 struct amrgeo {
        int nodeindi; // nodefile indicator
        int eleindi; // element file indicator
-       char elefilename[FILENAMESIZE];
-       char nodefilename[FILENAMESIZE];
+       std::string elefilename;
+       std::string nodefilename;
        REAL minlength;// min length could be passed from command line
 };
 

@@ -61,22 +61,21 @@ void map_setnode(struct node_map *m,int pt,REAL coords[]) {
           map->xandy[0] = coords[0]; 
 	  map->xandy[1] = coords[1];           
           return;
-        }// #1 ends here
+      }// #1 ends here
       // #2 inserting at the last element
       if(map->nxt == NULL) {
           map->nxt = create_nodemap();
-         //map->nxt=map_create();
-         if(!map->nxt){
-            return;
-         }
-	 map = map->nxt;
-	 map->point = pt;
-	 map->xandy[0] = coords[0];
-	 map->xandy[1] = coords[1];
-	 map->nxt = NULL;
-         return;
+          //map->nxt=map_create();
+          if(!map->nxt)
+          	return;
+	  map = map->nxt;
+	  map->point = pt;
+	  map->xandy[0] = coords[0];
+	  map->xandy[1] = coords[1];
+	  map->nxt = NULL;
+          return;
       }// #2 ends here
-   }
+     }
 }
 
 // The following function prints the node map.
@@ -100,15 +99,14 @@ void display_map(struct node_map *first){
 REAL* map_getnode(struct node_map *m,int pt) {
    struct node_map *map;
    for(map = m;map != NULL;map = map->nxt) {
-     if(map->point == pt){ //!strcasecmp(name,map->name)) {
+     if(map->point == pt) //!strcasecmp(name,map->name)) {
        return map->xandy;
-     }
    }
    return NULL;
 }
 
 // The following function creates an edgemap.
-struct edge_map* create_edgemap(){
+/*struct edge_map* create_edgemap(){
 	struct edge_map *em;
    	em = (struct edge_map *)malloc(sizeof(struct edge_map));
    	if(!em)
@@ -117,7 +115,7 @@ struct edge_map* create_edgemap(){
 	em->key2 = 0;
    	em->nxt = NULL;
    	return em;
-}
+} */
 
 // The following function free's edge map.
 void free_edgemap(struct edge_map *map) {
@@ -151,7 +149,7 @@ void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
         }// #1 ends here
       // #2 inserting at the last element
       if (map->nxt == NULL) {
-          map->nxt = create_edgemap();
+          map->nxt = new edge_map();
          //map->nxt=map_create();
          if(!map->nxt)
             return;
@@ -191,9 +189,8 @@ std::vector<int> edgemap_getnodes(struct edge_map *m,int k1, int k2) {
    std::vector<int> dummy;
    dummy = {0,0};
    for(map = m;map != NULL;map = map->nxt) {
-     if ( ((map->key1 == k1) && (map->key2 == k2)) || ((map->key1 == k2) && (map->key2 == k1)) ){ 
+     if ( ((map->key1 == k1) && (map->key2 == k2)) || ((map->key1 == k2) && (map->key2 == k1)) )
        return map->node_nums;
-     }
    }
    return dummy;
 }
