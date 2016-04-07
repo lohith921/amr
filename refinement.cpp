@@ -79,10 +79,35 @@ REAL calc_length(REAL *A, REAL *B){
 void print_elements(struct element *e){
 	printf("#: %d, Nodes %d, %d, %d\n",e->ele_no,e->nodes[0],e->nodes[1],e->nodes[2]);
 }
+/*************************************************************************/
+struct element * find_element(struct element *e, struct node n1, struct node n2, struct node n3){
+	struct element *temp;
+	 if(el->ele_no == -1){// for head element
+                   temp = el->next;
+     }
+     else{
+                   temp = el;
+     }
+	 while(temp != NULL){
+		 if (temp->nodes[0]->node_no == n1.node_no && temp->nodes[1]->node_no == n2.node_no && temp->nodes[2]->node_no == n3.node_no)
+			 return temp;
+		 else if (temp->nodes[0]->node_no == n2.node_no && temp->nodes[1]->node_no == n3.node_no && temp->nodes[2]->node_no == n1.node_no)
+			 return temp;
+		 else if (temp->nodes[0]->node_no == n1.node_no && temp->nodes[1]->node_no == n1.node_no && temp->nodes[2]->node_no == n2.node_no)
+			 return temp;
+		 else
+			 temp = temp->next;
+	 }
+	 if (temp == NULL)
+		 return NULL;
+}
+
+
+
 /**********************************************************************/
 void process(struct element *el,struct node_map *node_map, struct edge_map* emap, int tol){
      //printf("entered process for the element: %d\n",el->ele_no);
-     struct element *temp1;
+     struct element *temp1, *temp2;
      //struct node_map *temp2;
      int i, j, eleno, vertices[3]; 
      int ngAB, ngBC, ngCA;
@@ -117,7 +142,7 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
                 std::cout << "Entered AB " << std::endl;
                 // ngb has the node numbers of nodes opposite to edge AB.
                 std::vector<int> ngb = edgemap_getnodes(emap, temp1->nodes[0], temp1->nodes[1]);
-                std::cout << "Get nodes is successful" << std::endl;
+                //std::cout << "Get nodes is successful" << std::endl;
                 if(ngb[0] == temp1->nodes[2])
                           ngAB = ngb[1];
                 else
@@ -133,6 +158,7 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
     	        nw->nodes[2]  =  temp1->nodes[2];
     	        set_nedgemap(emap,nw->nodes);
     		if( ngAB != -1){
+					temp2 = find_element(el, temp1->nodes[0], temp1->nodes[1], ngAB);
     	        	nw2 = new element();
     	        	nw2->ele_no  =  ++num_ele;
     	        	nw2->nodes[0]  = temp1->nodes[0];
@@ -184,6 +210,7 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
 	      nw->nodes[2]  =  temp1->nodes[2];
 	      set_nedgemap(emap,nw->nodes);
 	      if (ngBC != -1){
+			  temp2 = find_element(el, temp1->nodes[1], temp1->nodes[2], ngBC);
 	      		nw2 = new element();
 	      		nw2->ele_no  =  ++num_ele;
 	      		nw2->nodes[0]  = temp1->nodes[1];
@@ -234,6 +261,7 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
    		nw->nodes[2] = num_nodes;
    		set_nedgemap(emap,nw->nodes);
    		if (ngCA != -1){
+			temp2 = find_element(el, temp1->nodes[2], temp1->nodes[0], ngCA);
    			nw2 = new element();
 			nw2->ele_no  =  ++num_ele;
     			nw2->nodes[0]  = temp1->nodes[2];
