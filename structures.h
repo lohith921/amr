@@ -6,6 +6,13 @@
 #define FILENAMESIZE 2048
 #define INPUTLINESIZE 1024
 #include <string>
+#include <vector>
+
+#ifdef SINGLE
+#define REAL float
+#else
+#define REAL double
+#endif
 
 /* Structure to hold properties */
 struct amrgeo {
@@ -28,19 +35,35 @@ struct amrgeo {
        		nodes[2] = 0;
        		next = NULL;
        }
-} *head_ele; 
+}; 
 
 /* structure for nodes*/
  struct node{
-       int node_no;
-       REAL vertices[2];
-	   struct node *next;
- } *head_node;
+ 	int node_no;
+       	REAL vertices[2];
+       	struct node *next;
+       	node(){
+       		node_no = 0;
+       		vertices[0] = 0;
+       		vertices[1] = 0;
+       		next = NULL;
+       	}       		
+ };
  
  /*structure to hold vertices */
  struct vertex{
        int no;
        REAL *values;
+       vertex(){
+       		no = 0;
+       		values = NULL;
+       	}
  };
- 
+  void tokenize(std::string str, std::vector<int> &token_v);
+  REAL* compute_mid(REAL*, REAL*);
+  REAL calc_length(REAL *, REAL *);
+  void write_elements(std::string, struct element*);
+  void write_nodes(std::string ,struct node_map *);
+  struct element *sort_list(struct element *);
+  struct element * find_element(struct element *, int , int , int );
  #endif
