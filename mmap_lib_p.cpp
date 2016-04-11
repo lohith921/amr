@@ -142,7 +142,7 @@ void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
     	return;
     }
     // #1 if key1 & key2 matches any of the edges already present
-    for(map=m;;map=map->nxt) {
+    for(map = m;;map = map->nxt) {
       if ( ((k1 == map->key1) && (k2 == map->key2)) || ((k1 == map->key2) && (k2 == map->key1)) ){
       		map->node_nums.push_back(node);        
           	return;
@@ -162,9 +162,9 @@ void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
    }
 }
 
-void set_nedgemap(struct edge_map *m, int nodes[3]){
+void set_nedgemap(struct edge_map *m, int nodes_list[3]){
 	for(int i=0;i<3;i++)
-		set_edgemap(m,nodes[i],nodes[(i+1)%3],nodes[(i+2)%3]);
+		set_edgemap(m,nodes_list[i],nodes_list[(i+1)%3],nodes_list[(i+2)%3]);
 }
 
 void display_edgemap(struct edge_map *first){
