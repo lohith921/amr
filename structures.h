@@ -59,11 +59,11 @@ struct amrgeo {
        		values = NULL;
        	}
  };
-  void tokenize(std::string str, std::vector<int> &token_v);
+  void tokenize(std::string str, std::vector<std::string> &token_v);
   REAL* compute_mid(REAL*, REAL*);
   REAL calc_length(REAL *, REAL *);
-  void write_elements(std::string, struct element*);
-  void write_nodes(std::string ,struct node_map *);
+  void write_elements(std::string, struct element*, int);
+  void write_nodes(std::string ,struct node_map *, int);
   struct element *sort_list(struct element *);
   struct element * find_element(struct element *, int , int , int );
  #endif
