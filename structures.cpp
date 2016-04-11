@@ -12,18 +12,18 @@
 #else
 #define REAL double
 #endif
-/**String tokenizer for reading files****************************/
-void tokenize(std::string str, std::vector<int> &token_v){
-    size_t start = str.find_first_not_of(" "), end=start;
 
-    while (start != std::string::npos){
+/**************String tokenizer for reading files*********************/
+void tokenize(std::string str, std::vector<std::string> &token_v){
+	size_t start = str.find_first_not_of(" "), end = start;
+	while (start != std::string::npos){
         // Find next occurence of delimiter
-        end = str.find(" ", start);
+        	end = str.find(" ", start);
         // Push back the token found into vector
-        token_v.push_back(str.substr(start, end-start));
+                token_v.push_back(str.substr(start, end-start));
         // Skip all occurences of the delimiter to find new start
-        start = str.find_first_not_of(" ", end);
-    }
+        	start = str.find_first_not_of(" ", end);
+    	}
 }
 /*******************************************************************/
 REAL * compute_mid(REAL *vA, REAL *vB){
@@ -47,9 +47,9 @@ REAL calc_length(REAL *A, REAL *B){
 	return d;
 }
 /**********************************************************************/
-void write_elements(std::string rt,struct element *el, int num_ele){
+void write_elements(std::string rt, struct element *el, int num_ele){
 	std::ofstream fp; 
-	fp.open((rt + ".1.ele"), std::ios::out);
+	fp.open((rt + ".r.ele"), std::ios::out);
 	struct element *temp;
 	temp = el->next;
 	std::cout << "Write_elements is called" << std::endl;
@@ -66,9 +66,9 @@ void write_nodes(std::string rt,struct node_map *m, int num_nodes){
 	std::cout << "write_nodes is called" << std::endl;
 	std::ofstream fp;
 	struct node_map *temp = m;
-	fp.open((rt + ".1.node"),std::ios::out); 
+	fp.open((rt + ".r.node"),std::ios::out); 
 	int i;
-	fp << num_nodes << 2 << std::endl; 
+	fp << num_nodes << " " << 2 << std::endl; 
 	while(temp!=  NULL){
 	 	fp << temp->point << " " << temp->xandy[0] << " " << temp->xandy[1] << std::endl;
 		//fprintf(fp," %d %f %f\n",temp->point,temp->xandy[0],temp->xandy[1]);//verts[1]);
