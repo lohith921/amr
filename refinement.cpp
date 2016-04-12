@@ -99,13 +99,15 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
      		if (length >= tol){
                 	//std::cout << "Entered AB " << std::endl;
                 	// ngb has the node numbers of nodes opposite to edge AB.
-                	std::vector<int> ngb = edgemap_getnodes(emap, temp1->nodes[0], temp1->nodes[1]);
+                	//std::vector<int> ngb = edgemap_getnodes(emap, temp1->nodes[0], temp1->nodes[1]);
+                	int ngb = edgemap_getnodes(emap, temp1->nodes[0], temp1->nodes[1]);
                 	//std::cout << "Get nodes is successful" << std::endl;
-                	if(ngb[0] == temp1->nodes[2])
+                	std::cout << "Node retrieved is " << ngb << std::endl;
+                	/*if(ngb[0] == temp1->nodes[2])
                 		ngAB = ngb[1];
 			else
-				ngAB = ngb[0];
-			std::cout << "Neighbor is " << ngAB << std::endl;
+				ngAB = ngb[0];*/
+			//std::cout << "Neighbor node is " << ngAB << std::endl;
 			midAB  =  new REAL[2]; //(REAL *)malloc(2*sizeof(REAL));
                 	midAB  =  compute_mid(vertexA, vertexB);
                 	num_nodes++;
@@ -117,9 +119,9 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
     	        	nw->nodes[2]  =  temp1->nodes[2];
     	        	set_nedgemap(emap,nw->nodes);
     			if( ngAB != -1){
-				temp2 = find_element(el, temp1->nodes[0], temp1->nodes[1], ngAB);
+				temp2 = find_element(el, temp1->nodes[0], temp1->nodes[1], ngb);
 				if(temp2 != NULL){
-					std::cout << " Neighbor found is " << temp2->ele_no << std::endl;
+					std::cout << " Neighbor tri found is " << temp2->ele_no << std::endl;
     	        			nw2 = new element();
     	        			nw2->ele_no  =  ++num_ele;
     	        			nw2->nodes[0]  = temp1->nodes[0];
@@ -127,27 +129,28 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
     	        			nw2->nodes[2]  = num_nodes;
     	        			set_nedgemap(emap, nw2->nodes);
     	
-    	        			nw3 = new element();
-    	        			nw3->ele_no  =  ++num_ele;
-    	        			nw3->nodes[0]  = num_nodes;
-    	        			nw3->nodes[1]  = ngAB;
-    	        			nw3->nodes[2]  = temp1->nodes[1];
-    	        			set_nedgemap(emap, nw3->nodes);
+    	        			//nw3 = new element();
+    	        			//nw3->ele_no  =  ++num_ele;
+    	        			temp2->nodes[0]  = num_nodes;
+    	        			temp2->nodes[1]  = ngAB;
+    	        			temp2->nodes[2]  = temp1->nodes[1];
+    	        			set_nedgemap(emap, temp2->nodes);
     	    	
     	        			temp1->nodes[1]  =  num_nodes;
     	        			nw->next  =  temp1->next;
-    	        			temp1->next  =  nw2; //new triangles A,mid,C and mid,B,C are formed
-    	        			nw2->next = nw3;
-    	        			nw3->next = temp2->next;
+    	        			temp1->next  =  nw; //new triangles A,mid,C and mid,B,C are formed
+    	        			nw2->next = temp2->next;
+    	        			temp2->next = nw2;
     	        		//temp2->next = nw3;
     	        		//temp2 = nw3;
-    	        			std::cout << "Inserted new elements " << nw->ele_no << " " << nw2->ele_no << " " << nw3->ele_no << 							std::endl;
+    	        			std::cout << "Inserted new elements " << nw->ele_no << " " << nw2->ele_no << " " << 							std::endl;
                 			temp1 = nw;
-                			temp2 = nw3;
+                			temp2 = nw2;
                 		}
                 		else{
-                			std::cout << "No shared triangle found, exiting " << std::endl;
-                			exit(0);
+                			std::cout << "No shared triangle found, returning " << std::endl;
+                			//exit(0);
+                			return;
                 		}
                 	}
                 	else{
@@ -166,15 +169,18 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
     		std::cout << "Length BC for " << temp1->ele_no << " is " << length << std::endl;
     		if(length > tol){
               		// printf("90\n");
+              		//std::vector<int> ngb = edgemap_getnodes(emap, temp1->nodes[1], temp1->nodes[2]);
+              		int ngb = edgemap_getnodes(emap, temp1->nodes[1], temp1->nodes[2]);
+              		std::cout << "Node retrieved is " << ngb << std::endl;
               		midBC  =  new REAL[2];
               		midBC  =  compute_mid(vertexB,vertexC);
               		num_nodes++;
               		map_setnode(node_map, num_nodes, midBC);
-              		std::vector<int> ngb = edgemap_getnodes(emap, temp1->nodes[1], temp1->nodes[2]);
-              		if (ngb[0] == temp1->nodes[0])
+              		/*if (ngb[0] == temp1->nodes[0])
               			ngBC = ngb[1];
               		else
-    				ngBC = ngb[0];
+    				ngBC = ngb[0];*/
+    			//std::cout << "Neighbor node is " << ngBC << std::endl;	
 	      		nw  =  new element();
 	      		nw->ele_no  =  ++num_ele;
 	      		nw->nodes[0]  =  temp1->nodes[0];
@@ -182,7 +188,7 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
 	      		nw->nodes[2]  =  temp1->nodes[2];
 	      		set_nedgemap(emap,nw->nodes);
 	      		if (ngBC != -1){
-				temp2 = find_element(el, temp1->nodes[1], temp1->nodes[2], ngBC);
+				temp2 = find_element(el, temp1->nodes[1], temp1->nodes[2], ngb);
 				if (temp2 != NULL){
 	      				nw2 = new element();
 	      				nw2->ele_no  =  ++num_ele;
@@ -191,26 +197,27 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
 	      				nw2->nodes[2]  = num_nodes;
 	      				set_nedgemap(emap,nw2->nodes);
     			
-    					nw3 = new element();
-    					nw3->ele_no  =  ++num_ele;
-    					nw3->nodes[0]  = num_nodes;
-    					nw3->nodes[1]  = ngBC;
-    					nw3->nodes[2]  = temp1->nodes[2];
-    					set_nedgemap(emap,nw3->nodes);
+    					//nw3 = new element();
+    					//nw3->ele_no  =  ++num_ele;
+    					temp2->nodes[0]  = num_nodes;
+    					temp2->nodes[1]  = ngBC;
+    					temp2->nodes[2]  = temp1->nodes[2];
+    					set_nedgemap(emap,temp2->nodes);
   	  		
   	  				temp1->nodes[2]  =  num_nodes;
   	  				nw->next  =  temp1->next;
-  	  				temp1->next  =  nw2;//new triangles A,B,mid and mid,C,A are formed
-  	  				nw2->next = nw3;
-  	  				nw3->next = temp2->next;
+  	  				temp1->next  =  nw;//new triangles A,B,mid and mid,C,A are formed
+  	  				nw2->next = temp2->next;
+  	  				temp2->next = nw2;
   	  				//temp2->next = nw3;
-  	  				std::cout << "Inserted new elements " << nw->ele_no << " " << nw2->ele_no << " " << nw3->ele_no << std::endl;
+  	  				std::cout << "Inserted new elements " << nw->ele_no << " " << nw2->ele_no << " " << std::endl;
   	  				temp1 = nw;
-  	  				temp2 = nw3;
+  	  				temp2 = nw2;
   	  			}
   	  			else{
-  	  				std::cout << "No shared triangle found, exiting " << std::endl;
-  	  				exit(0);
+  	  				std::cout << "No shared triangle found, returning " << std::endl;
+  	  				//exit(0);
+  	  				return;
   	  			}
   	  		}
   	  		else{
@@ -231,12 +238,12 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
 			midCA  =  compute_mid(vertexC,vertexA); 
 			num_nodes++;
 			map_setnode(node_map, num_nodes, midCA);
-  	
-  			std::vector<int> ngb = edgemap_getnodes(emap, temp1->nodes[1], temp1->nodes[2]);
+  			int ngb = edgemap_getnodes(emap, temp1->nodes[1], temp1->nodes[2]);
+  			/*std::vector<int> ngb = edgemap_getnodes(emap, temp1->nodes[1], temp1->nodes[2]);
   			if(ngb[0] == temp1->nodes[0])
   				ngCA = ngb[1];
     			else
-    				ngCA = ngb[0];
+    				ngCA = ngb[0]; */
     		
     			nw  =  new element();
   			nw->ele_no  =  ++num_ele;
@@ -245,7 +252,7 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
    			nw->nodes[2] = num_nodes;
    			set_nedgemap(emap,nw->nodes);
    			if (ngCA != -1){
-				temp2 = find_element(el, temp1->nodes[2], temp1->nodes[0], ngCA);
+				temp2 = find_element(el, temp1->nodes[2], temp1->nodes[0], ngb);
 				if (temp2 != NULL){
    					nw2 = new element();
 					nw2->ele_no  =  ++num_ele;
@@ -254,26 +261,27 @@ void process(struct element *el,struct node_map *node_map, struct edge_map* emap
     					nw2->nodes[2]  = num_nodes;
     					set_nedgemap(emap,nw2->nodes);
     		
-    					nw3 = new element();
-    					nw3->ele_no  =  ++num_ele;
-    					nw3->nodes[0]  = ngBC;
-    					nw3->nodes[1]  = temp1->nodes[0];
-    					nw3->nodes[2]  = num_nodes;
+    					//nw3 = new element();
+    					//nw3->ele_no  =  ++num_ele;
+    					temp2->nodes[0]  = ngBC;
+    					temp2->nodes[1]  = temp1->nodes[0];
+    					temp2->nodes[2]  = num_nodes;
     					set_nedgemap(emap,nw3->nodes);
     		
    					temp1->nodes[0] = num_nodes;
    					nw->next = temp1->next;
-   					temp1->next = nw2;//new triangles A,B,mid and mid,B,C are formed
-   					nw2->next = nw3;
-   					nw3->next = temp2->next;
+   					temp1->next = nw;//new triangles A,B,mid and mid,B,C are formed
+   					nw2->next = temp2->next;
+   					temp2->next = nw2;
    					//temp2->next = nw3;
-   					std::cout << "Inserted new elements " << nw->ele_no << " " << nw2->ele_no << " " << nw3->ele_no << std::endl;
+   					std::cout << "Inserted new elements " << nw->ele_no << " " << nw2->ele_no << " " << std::endl;
         				temp1 = nw;
-        				temp2 = nw3;
+        				temp2 = nw2;
         			}
         			else{
-        				std::cout << "No shared triangle found, exiting " << std::endl;
-  	  				exit(0);
+        				std::cout << "No shared triangle found, returning " << std::endl;
+  	  				//exit(0);
+  	  				return;
   	  			}
         		}
         		else{
@@ -377,7 +385,7 @@ int main(int argc, char **argv)
 		std::cout << "Fetched the element " << e->ele_no << " with nodes " << e->nodes[0] << " " << e->nodes[1] << " " << e->nodes[2] << std::endl;
 	else
 		std::cout << "Could not find the element" << std::endl;*/
-	process(head_ele, nodemap, emap, 12.0);
+	process(head_ele, nodemap, emap, 7.0);
 	//std::cout << "Done processing" << std::endl;
 	/*std::cout << "Printing node map" << std::endl;
 	display_map(nodes);
