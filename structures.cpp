@@ -15,6 +15,7 @@
 
 /**************String tokenizer for reading files*********************/
 void tokenize(std::string str, std::vector<std::string> &token_v){
+	//std::cout << "Tokenizer called " << std::endl;
 	size_t start = str.find_first_not_of(" "), end = start;
 	while (start != std::string::npos){
         // Find next occurence of delimiter
@@ -116,26 +117,42 @@ struct element *sort_list(struct element *head) {
 
 /*************************************************************************/
 struct element* find_element(struct element *el, int n1, int n2, int n3){
-	std::cout << "Entered find element" << std::endl;
+	std::cout << "Find element is called for nodes " << n1 << " " << n2 << " " << n3 << std::endl;
 	struct element *temp;
-	int nd1, nd2, nd3;
-	if(el->ele_no == -1){// for head element
+	int nd1, nd2, nd3, c = 0;
+	if(el->ele_no == -1)// for head element
                  temp = el->next;
-     	}
-     	else{
+     	else
                  temp = el;
-     	}
+     	//pv = temp;
 	while(temp != NULL){
-	 nd1 = temp->nodes[0]; nd2 = temp->nodes[1]; nd3 = temp->nodes[2];
-	 if (nd1 == n1 && nd2 == n2 && nd3 == n3)
-		return temp;
-	 else if (nd1 == n2 && nd2 == n3 && nd3 == n1)
-		return temp;
-	 else if (nd1 == n3 && nd2 == n1 && nd3 == n2)
-		return temp;
-	 else
-		temp = temp->next;
-	 }
-	 if (temp == NULL)
-		 return NULL;
+		c = 0;
+		nd1 = temp->nodes[0]; nd2 = temp->nodes[1]; nd3 = temp->nodes[2];
+		std::cout << " Checking against following elements " << nd1 << " " << nd2 << " " << nd3 << std::endl;
+		if ((nd1 == n1) || (nd1 == n2) || (nd1 == n3))
+			c++;
+		if ((nd2 == n1) || (nd2 == n2) || (nd2 == n3))
+			c++;
+		if ((nd3 == n1) || (nd3 == n2) || (nd3 == n3))
+			c++;
+		std::cout << "Computed c value is " << c << std::endl;	
+		if (c == 3)
+			return temp;
+		else
+			temp = temp->next;
+	}
+	if (temp == NULL)
+		return NULL;
 }
+
+/************************** Removed code *************************/
+/*if ((nd1 == n1) && (nd2 == n2) && (nd3 == n3))
+			return temp;
+		else if ((nd1 == n2) && (nd2 == n3) && (nd3 == n1))
+			return temp;
+		else if ((nd1 == n3) && (nd2 == n1) && (nd3 == n2))
+			return temp;
+		else
+		 	//pv = temp;
+			temp = temp->next;
+			*/
