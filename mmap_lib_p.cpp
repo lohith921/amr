@@ -124,7 +124,7 @@ void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
    // First time inserting
     if (m->node_num == -1){ //&& (m->node_nums[1] == -1)){
     	m->key_pair.first = k1;
-    	m->key_part.second = k2;
+    	m->key_pair.second = k2;
     	m->node_num = node;
     	m->nxt = NULL;
     	return;
@@ -144,7 +144,7 @@ void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
          if(!map->nxt)
             return;
 	 map = map->nxt;
-	 map->key_part.first = k1;  map->key_pair.second = k2;
+	 map->key_pair.first = k1;  map->key_pair.second = k2;
 	 map->node_num = node;
 	 map->nxt = NULL;
          return;

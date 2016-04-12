@@ -18,7 +18,7 @@ struct node_map {
 };
 
  struct edge_map{
-	std::part<int, int> key_pair;
+	std::pair<int, int> key_pair;
 	int node_num;
 	//std::vector<int> node_nums;
 	struct edge_map *nxt;
