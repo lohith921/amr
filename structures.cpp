@@ -13,6 +13,12 @@
 #define REAL double
 #endif
 
+/****************** Set edge map************************
+void set_nedgemap(std::map< std::pair<int,int>, int> m, int nodes_list[3]){
+	//std::cout << "Set edge map is called with " << nodes_list[0] << " " << nodes_list[1] << " " << nodes_list[2] << std::endl;
+	for(int i = 0;i < 3;i++)
+		set_edgemap(m,nodes_list[i],nodes_list[(i+1)%3],nodes_list[(i+2)%3]);
+}*/
 /**************String tokenizer for reading files*********************/
 void tokenize(std::string str, std::vector<std::string> &token_v){
 	//std::cout << "Tokenizer called " << std::endl;
@@ -135,7 +141,7 @@ struct element* find_element(struct element *el, int n1, int n2, int n3){
 			c++;
 		if ((nd3 == n1) || (nd3 == n2) || (nd3 == n3))
 			c++;
-		std::cout << "Computed c value is " << c << std::endl;	
+		//std::cout << "Computed c value is " << c << std::endl;	
 		if (c == 3)
 			return temp;
 		else
