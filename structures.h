@@ -66,4 +66,5 @@ struct amrgeo {
   void write_nodes(std::string ,struct node_map *, int);
   struct element *sort_list(struct element *);
   struct element * find_element(struct element *, int , int , int );
+  //void set_edgemap(struct edge_map *,int ,int ,int );
  #endif

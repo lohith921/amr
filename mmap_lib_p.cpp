@@ -105,18 +105,6 @@ REAL* map_getnode(struct node_map *m,int pt) {
    return NULL;
 }
 
-// The following function creates an edgemap.
-/*struct edge_map* create_edgemap(){
-	struct edge_map *em;
-   	em = (struct edge_map *)malloc(sizeof(struct edge_map));
-   	if(!em)
-      		return NULL;
-	em->key1 = 0;
-	em->key2 = 0;
-   	em->nxt = NULL;
-   	return em;
-} */
-
 // The following function free's edge map.
 void free_edgemap(struct edge_map *map) {
    if(!map)
@@ -132,38 +120,40 @@ void free_edgemap(struct edge_map *map) {
 
 // The following function is used to set node entries in edge map.
 void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
-   struct edge_map *map;
+	std::cout << "Keys are " << k1 << " " << k2 << " value is " << node << std::endl;
    // First time inserting
-    if(m->node_nums.empty()){
-    	m->key1 = k1;
-    	m->key2 = k2;
-    	m->node_nums.push_back(node);
+    if (m->node_num == -1){ //&& (m->node_nums[1] == -1)){
+    	m->key_pair.first = k1;
+    	m->key_part.second = k2;
+    	m->node_num = node;
     	m->nxt = NULL;
     	return;
     }
+    struct edge_map *map;
     // #1 if key1 & key2 matches any of the edges already present
-    for(map = m;;map = map->nxt) {
-      if ( ((k1 == map->key1) && (k2 == map->key2)) || ((k1 == map->key2) && (k2 == map->key1)) ){
-      		map->node_nums.push_back(node);        
+    for(map = m;map->nxt != NULL;map = map->nxt) {
+      if  ((k1 == map->key_pair.first) && (k2 == map->key_pair.second)){ //|| ((k1 == map->key2) && (k2 == map->key1)) ){
+      		map->node_num = node;       
           	return;
-        }// #1 ends here
+        }
+      }
+      // #1 ends here
       // #2 inserting at the last element
       if (map->nxt == NULL) {
           map->nxt = new edge_map();
-         //map->nxt=map_create();
          if(!map->nxt)
             return;
 	 map = map->nxt;
-	 map->key1 = k1;  map->key2 = k2;
-	 map->node_nums.push_back(node);
+	 map->key_part.first = k1;  map->key_pair.second = k2;
+	 map->node_num = node;
 	 map->nxt = NULL;
          return;
       }// #2 ends here
-   }
 }
 
 void set_nedgemap(struct edge_map *m, int nodes_list[3]){
-	for(int i=0;i<3;i++)
+	//std::cout << "Set edge map is called with " << nodes_list[0] << " " << nodes_list[1] << " " << nodes_list[2] << std::endl;
+	for(int i = 0;i < 3;i++)
 		set_edgemap(m,nodes_list[i],nodes_list[(i+1)%3],nodes_list[(i+2)%3]);
 }
 
@@ -173,7 +163,7 @@ void display_edgemap(struct edge_map *first){
 	temp = first;
 	if (temp != NULL){
 		while(temp != NULL){
-		std::cout << temp->key1 << "," << temp->key2 << " Nodes are: " << temp->node_nums[0] << temp->node_nums[1] <<std::endl;
+		std::cout << temp->key_pair.first << "," << temp->key_pair.second << " Node is: " << temp->node_num <<std::endl;
 		temp = temp->nxt;
 		}
 	}
@@ -182,17 +172,15 @@ void display_edgemap(struct edge_map *first){
 		return; 
 	}
 }
-
 // The following function is used to get nodes from the edge map.
-std::vector<int> edgemap_getnodes(struct edge_map *m,int k1, int k2) {
+//std::vector<int> edgemap_getnodes(struct edge_map *m,int k1, int k2) {
+int edgemap_getnodes(struct edge_map *m, int k1, int k2){   
    struct edge_map *map;
-   std::vector<int> dummy;
-   dummy = {0,0};
    for(map = m;map != NULL;map = map->nxt) {
-     if ( ((map->key1 == k1) && (map->key2 == k2)) || ((map->key1 == k2) && (map->key2 == k1)) )
-       return map->node_nums;
+     if ((map->key_pair.first == k1) && (map->key_pair.second == k2)) 
+       return map->node_num;
    }
-   return dummy;
+   return -1;
 }
 
 /*******************************************************************
@@ -272,4 +260,24 @@ void map_freeneighbor(struct map_neighbor *map) {
       free(mp);
    }
 }
+/*em = (struct edge_map *)malloc(sizeof(struct edge_map));
+   	if(!em)
+      		return NULL;
+	em->key1 = 0;
+	em->key2 = 0;
+   	em->nxt = NULL;
+   	 //std::vector<int> dummy;
+   //dummy = {0,0};
+   /* The following function creates an edgemap.
+struct edge_map* create_edgemap(){
+	struct edge_map *em = new edge_map();
+   	return em;
+}
+//m->key1 = k1;
+    	//m->key2 = k2;
+    	//m->node_nums.erase(m->node_nums.begin(), m->node_nums.end());
+    	//map->node_nums.push_back(node); 
+    //map->node_nums.erase(map->node_nums.begin(), map->node_nums.end());
+	 //map->node_nums.push_back(node);
+	 //|| ((map->key1 == k2) && (map->key2 == k1)) )
 **************************************************************/

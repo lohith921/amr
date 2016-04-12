@@ -1,5 +1,4 @@
-/* map_lib: A simple associative-array library for c++
-*/
+/* map_lib: A simple associative-array library for c++ */
 
 #include <vector>
 
@@ -18,16 +17,16 @@ struct node_map {
    REAL *xandy;
 };
 
-struct edge_map{
-	int key1, key2;
-	std::vector<int> node_nums;
+ struct edge_map{
+	std::part<int, int> key_pair;
+	int node_num;
+	//std::vector<int> node_nums;
 	struct edge_map *nxt;
 	edge_map(){
-		key1 = 0;
-		key2 = 0;
+		key_pair.first = -1;
+		key_pair.second = -1;
+		node_num = -1;
 		nxt = NULL;
-		node_nums.push_back(-1);
-		node_nums.push_back(-1);
 	}
 };
 
@@ -39,11 +38,11 @@ REAL* map_getnode(struct node_map *m,int pt);
 
 // The following are related to edge map.
 //struct edge_map *create_edgemap();
-void free_edgemap(struct edge_map *map);
-void set_edgemap(struct edge_map *m,int k1, int k2,int node);
-void set_nedgemap(struct edge_map *m, int nodes[3]);
-void display_edgemap(struct edge_map *first);
-std::vector<int> edgemap_getnodes(struct edge_map *,int , int );
+void free_edgemap(struct edge_map *);
+void set_edgemap(struct edge_map *,int ,int ,int );
+void set_nedgemap(struct edge_map *, int nodes[3]);
+void display_edgemap(struct edge_map *);
+int edgemap_getnodes(struct edge_map *,int , int );
 
 #endif
 

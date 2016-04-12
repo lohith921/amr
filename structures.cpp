@@ -54,8 +54,8 @@ void write_elements(std::string rt, struct element *el, int num_ele){
 	struct element *temp;
 	temp = el->next;
 	std::cout << "Write_elements is called" << std::endl;
-	fp << num_ele << " " << 3; 
-	while(temp!=  NULL){
+	fp << num_ele << " " << 3 << std::endl; 
+	while(temp !=  NULL){
 		fp << temp->ele_no << " " << temp->nodes[0] << " " << temp->nodes[1] << " " << temp->nodes[2] << std::endl;
      		temp = temp->next;
 	}
