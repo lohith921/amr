@@ -61,18 +61,14 @@ void process(struct element *el, struct node_map *n_map, struct edge_map* emap, 
      struct element *temp1, *temp2;
 	// REAL *midAB, *midBC, *midCA;
      int i, j, eleno, vertices[3]; 
+     temp1 = el;
      if (el != NULL){
-     	if (el->ele_no == -1)// for head element
-            temp1 = el->next;
-     	else
-            temp1 = el;
 		REAL *vertexA,*vertexB,*vertexC;
 		REAL *midAB, *midBC, *midCA, length;
 		vertexA = new REAL[2];
 		vertexB = new REAL[2];
 		vertexC = new REAL[2];
 		struct element *nw, *nw2, *nw3;
-			//if (temp1 != NULL){
 		if(n_map != NULL){
 			vertexA = map_getnode(n_map,temp1->nodes[0]);
 			vertexB = map_getnode(n_map,temp1->nodes[1]);
@@ -236,13 +232,15 @@ void process(struct element *el, struct node_map *n_map, struct edge_map* emap, 
 		}
     	std::cout << "All lengths under limit" << std::endl;
 		//temp1 = temp1->next;
+		//temp1 = temp1->next;
+		//process(temp1, n_map, emap, tol);
 		return ;
 		}
 		//processing ends here
 	// for the first if
-	else{
-		std::cout << "There are no elements " << std::endl;
-	}
+	//else{
+	//	std::cout << "There are no elements " << std::endl;
+	//}
 }
 
 /************************************************************************/
@@ -325,7 +323,11 @@ int main(int argc, char **argv)
 	fnode.close(); 
 	std::cout << "Displaying edge map" << std::endl;
 	//display_edgemap(emap);
-	process(head_ele, nodemap, emap, 7.0);
+	struct element *temp = head_ele->next;
+	while (temp != NULL){
+		process(temp, nodemap, emap, 5.0);
+		temp = temp->next;
+	}
 	head_ele = sort_list(head_ele);
 	write_elements(filename, head_ele, num_ele);
 	write_nodes(filename, nodemap, num_nodes);
