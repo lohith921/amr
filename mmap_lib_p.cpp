@@ -52,6 +52,7 @@ void map_setnode(struct node_map *m,int pt,REAL coords[]) {
     m->point = pt;
     m->xandy[0] = coords[0];
     m->xandy[1] = coords[1];
+    m->bnd = coords[2];
     m->nxt = NULL;
     return;
     }
@@ -59,7 +60,8 @@ void map_setnode(struct node_map *m,int pt,REAL coords[]) {
     for(map = m;;map = map->nxt) {
       if(pt == map->point){
           map->xandy[0] = coords[0]; 
-	  map->xandy[1] = coords[1];           
+	  map->xandy[1] = coords[1];   
+	  map->bnd = coords[2];        
           return;
       }// #1 ends here
       // #2 inserting at the last element
@@ -72,6 +74,7 @@ void map_setnode(struct node_map *m,int pt,REAL coords[]) {
 	  map->point = pt;
 	  map->xandy[0] = coords[0];
 	  map->xandy[1] = coords[1];
+	  map->bnd = coords[2];
 	  map->nxt = NULL;
           return;
       }// #2 ends here
@@ -119,8 +122,8 @@ void free_edgemap(struct edge_map *map) {
 }
 
 // The following function is used to set node entries in edge map.
-void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
-	std::cout << "Keys are " << k1 << " " << k2 << " value is " << node << std::endl;
+void set_edgemap(struct edge_map *m, int k1, int k2, int node) {
+//	std::cout << "Keys are " << k1 << " " << k2 << " value is " << node << std::endl;
    // First time inserting
     if (m->node_num == -1){ //&& (m->node_nums[1] == -1)){
     	m->key_pair.first = k1;
@@ -132,29 +135,28 @@ void set_edgemap(struct edge_map *m,int k1, int k2,int node) {
     struct edge_map *map;
     // #1 if key1 & key2 matches any of the edges already present
     for(map = m;map->nxt != NULL;map = map->nxt) {
-      if  ((k1 == map->key_pair.first) && (k2 == map->key_pair.second)){ //|| ((k1 == map->key2) && (k2 == map->key1)) ){
+      if ((k1 == map->key_pair.first) && (k2 == map->key_pair.second)){ //|| ((k1 == map->key2) && (k2 == map->key1)) ){
       		map->node_num = node;       
           	return;
         }
       }
-      // #1 ends here
-      // #2 inserting at the last element
-      if (map->nxt == NULL) {
-          map->nxt = new edge_map();
-         if(!map->nxt)
-            return;
-	 map = map->nxt;
-	 map->key_pair.first = k1;  map->key_pair.second = k2;
-	 map->node_num = node;
-	 map->nxt = NULL;
-         return;
-      }// #2 ends here
+    if (map->nxt == NULL) {
+    	map->nxt = new edge_map();
+    	if (!map->nxt)
+        	return;
+		map = map->nxt;
+		map->key_pair.first = k1;  map->key_pair.second = k2;
+		map->node_num = node;
+		map->nxt = NULL;
+        return;
+    }// #2 ends here
 }
 
 void set_nedgemap(struct edge_map *m, int nodes_list[3]){
 	//std::cout << "Set edge map is called with " << nodes_list[0] << " " << nodes_list[1] << " " << nodes_list[2] << std::endl;
 	for(int i = 0;i < 3;i++)
-		set_edgemap(m,nodes_list[i],nodes_list[(i+1)%3],nodes_list[(i+2)%3]);
+		set_edgemap(m, nodes_list[i], nodes_list[(i+1)%3], nodes_list[(i+2)%3]);
+	std::cout << "Map insertion successful" << std::endl;
 }
 
 void display_edgemap(struct edge_map *first){

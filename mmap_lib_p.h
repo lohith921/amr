@@ -13,7 +13,7 @@
 
 struct node_map {
    struct node_map *nxt;
-   int point;
+   int point, bnd;
    REAL *xandy;
 };
 
