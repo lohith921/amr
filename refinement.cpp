@@ -23,8 +23,7 @@ static int num_nodes = 0; // to keep track of total no of nodes
 void insert_element(struct element *head_ele, struct element *t){
 	std::cout << "Entered insert element " << std::endl;
 	struct element *temp;
-	temp = (struct element *)malloc(sizeof(struct element *));
-	temp->next = NULL;
+	temp = new element();
 	if(head_ele->next == NULL)
 		head_ele->next = t;
 	else{
@@ -224,16 +223,18 @@ void process(struct element *el, struct node_map *n_map, struct edge_map* emap, 
 		}
 }
 
-/************************************************************************/
+/************************************************************************
+*************************************************************************/
 int main(int argc, char **argv){   
 	struct amrgeo *m;
 	int i,j,nele,nnode,node_no;
 	std::string filename;
 	std::ifstream fnode, fele;
-	std::vector<std::string> tok;
+	//std::vector<std::string> tok;
+	std::string tok[4];
 	std::string line;
-	//std::map< std::pair<int,int>, int > emap;
-	REAL vertices[2];
+	REAL ideal_length;
+	REAL vertices[3];
 	int nbs[3];
 	m = new amrgeo();
 	struct element *head_ele = new element();
@@ -242,6 +243,8 @@ int main(int argc, char **argv){
 	struct edge_map *emap;
     std::cout << "Please input the root of the file names without any extension" << std::endl;
  	std::cin >> filename;
+ 	std::cout << "What is your desired length" << std::endl;
+ 	std::cin >> ideal_length;
  	m->elefilename = (filename + ".ele");
  	m->nodefilename = (filename + ".node");
     fele.open(m->elefilename, std::ios::in);
@@ -249,37 +252,27 @@ int main(int argc, char **argv){
     getline(fele, line);
 	tokenize(line, tok);
 	nele = std::stoi(tok[0]);
-	std::cout << "no of elements is " << nele << std::endl;
+	std::cout << "No of elements is " << nele << std::endl;
 	emap = new edge_map();
-	//std::cout << "edge map created" << std::endl;
-	//emap = create_edgemap();
-	//std::cout << "0" << std::endl;
 	j = 0;
-	for( int i = 1; i <= nele; i++){
+	for (int i = 1; i <= nele; i++){
 	     struct element *temp = new element();
-	     getline(fele, line);
+		 getline(fele, line);
 	     std::cout << "line read is " << line << std::endl;
-	     //tok.erase(tok.begin(), tok.end());
-	     std::cout << "Token erased " << std::endl;
 	     tokenize(line, tok);
-	     std::cout << "Tokenized values " << tok[0] << " " << tok[1] << " " << tok[2] << " " << 
-	     //tok[3] << std::endl;
-	     temp->ele_no = std::stoi(tok[j+0]);
-	     temp->nodes[0] = std::stoi(tok[j+1]);
-	     temp->nodes[1] = std::stoi(tok[j+2]);
-	     temp->nodes[2] = std::stoi(tok[j+3]);
-	     j += 4;
-	     //fele >> temp->ele_no >> temp->nodes[0] >> temp->nodes[1] >> temp->nodes[2];
-	     insert_element(head_ele, temp); 
-	    // std::cout << "Calling set_nedgemap " << std::endl;	
+	     std::cout << "Tokenized values " << tok[0] << " " << tok[1] << " " << tok[2] << " " << tok[3] << std::endl;
+	     temp->ele_no = std::stoi(tok[0]);
+	     temp->nodes[0] = std::stoi(tok[1]);
+	     temp->nodes[1] = std::stoi(tok[2]);
+	     temp->nodes[2] = std::stoi(tok[3]);
+	     insert_element(head_ele, temp);
 	     set_nedgemap(emap, temp->nodes);
+	     std::cout << "Edgemap is set" << std::endl;
 	}
 	fele.close();
 	std::cout << "Reading elements completed" << std::endl;
 	//display_elements(head_ele);
-	//tok.erase(tok.begin(), tok.end());
 	/* following code reads node file and creates node map. */
-	std::vector<std::string> tok1;
 	fnode.open(m->nodefilename,std::ios::in);
 	//std::cout << "1" << std::endl;
 	char dmy1[3];
@@ -287,23 +280,21 @@ int main(int argc, char **argv){
 	/* creating a map of nodes */
 	struct	node_map *nodemap  =  create_nodemap();
 	getline(fnode,line);
-	tokenize(line,tok1);
+	tokenize(line,tok);
 	nnode = std::stoi(tok[0]);
-	//fnode >> nnode;
-	//std::cout << "# of nodes are " << nnode << std::endl;
+		m->attribindi = std::stoi(tok[2]);
+	m->boundindi = std::stoi(tok[3]);
 	num_nodes  =  nnode;
 	j = 0;
 	for(int i = 1; i <= nnode; i++){
- 		getline(fnode,line);
- 		//tok.erase(tok.begin(), tok.end());
- 		//tok.shrink_to_fit();
- 		tokenize(line,tok1);
- 		node_no = std::stoi(tok1[j+0]);
- 		vertices[0] = std::stod(tok1[j+1]);
- 		vertices[1] = std::stod(tok1[j+2]);
+		getline(fnode,line);
+ 		tokenize(line,tok);
+ 		node_no = std::stoi(tok[0]);
+ 		vertices[0] = std::stod(tok[1]);
+ 		vertices[1] = std::stod(tok[2]);
+ 		if (m->boundindi)
+ 			vertices[2] = 1;	
  		std::cout << "Tokenized values are" << node_no << " " << vertices[0] << " " << vertices[1] << std::endl;
- 		j += 3;
- 		//fnode >> node_no >> dmy1 >> vertices[0] >> dmy2 >> vertices[1];
  		map_setnode(nodemap, node_no, vertices);
 	}
 	std::cout << "Reading nodes is done" << std::endl;
@@ -312,7 +303,7 @@ int main(int argc, char **argv){
 	//display_edgemap(emap);
 	struct element *temp = head_ele->next;
 	while (temp != NULL){
-		process(temp, nodemap, emap, 5.0);
+		process(temp, nodemap, emap, ideal_length);
 		temp = temp->next;
 	}
 	head_ele = sort_list(head_ele);
