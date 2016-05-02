@@ -18,6 +18,8 @@
 struct amrgeo {
        int nodeindi; // nodefile indicator
        int eleindi; // element file indicator
+       int attribindi = 0; // attributes indicator, if set to 1, attributes are available otherwise no.
+       int boundindi = 0; // Boundary indicator
        std::string elefilename;
        std::string nodefilename;
        REAL minlength;// min length could be passed from command line
@@ -25,11 +27,12 @@ struct amrgeo {
 
 /* structure for elements*/
  struct element{
-	   int ele_no;
+	   int ele_no, visited;
 	   int nodes[3];
        struct element *next;
        element(){
        		ele_no = 0;
+       		visited = -1;
        		nodes[0] = 0;
        		nodes[1] = 0;
        		nodes[2] = 0;
@@ -40,10 +43,11 @@ struct amrgeo {
 /* structure for nodes*/
  struct node{
  	int node_no;
-       	REAL vertices[2];
-       	struct node *next;
-       	node(){
-       		node_no = 0;
+ 	int bnd = -1;
+    REAL vertices[2];
+   	struct node *next;
+   	node(){
+  		node_no = 0;
        		vertices[0] = 0;
        		vertices[1] = 0;
        		next = NULL;
@@ -59,12 +63,12 @@ struct amrgeo {
        		values = NULL;
        	}
  };
-  void tokenize(std::string str, std::vector<std::string> &token_v);
+  void tokenize(std::string str, std::string *token_v);
   REAL* compute_mid(REAL*, REAL*);
   REAL calc_length(REAL *, REAL *);
   void write_elements(std::string, struct element*, int);
   void write_nodes(std::string ,struct node_map *, int);
   struct element *sort_list(struct element *);
   struct element * find_element(struct element *, int , int , int );
-  //void set_edgemap(struct edge_map *,int ,int ,int );
+  void display_elements(struct element *);
  #endif

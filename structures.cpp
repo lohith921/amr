@@ -19,15 +19,34 @@ void set_nedgemap(std::map< std::pair<int,int>, int> m, int nodes_list[3]){
 	for(int i = 0;i < 3;i++)
 		set_edgemap(m,nodes_list[i],nodes_list[(i+1)%3],nodes_list[(i+2)%3]);
 }*/
+
+/*********************************************************************/
+void display_elements(struct element *t){
+	struct element *temp;
+	temp = t->next;
+	if(temp == NULL){
+		printf("There are no elements in the linked list\n");
+		exit(0);	
+	}
+	else{
+		while(temp !=  NULL){
+			printf("Element #: %d, nodes are: %d %d %d\n",temp->ele_no,temp->nodes[0],temp->nodes[1],temp->nodes[2]);
+			temp = temp->next;
+		}
+	}
+}
 /**************String tokenizer for reading files*********************/
-void tokenize(std::string str, std::vector<std::string> &token_v){
-	//std::cout << "Tokenizer called " << std::endl;
+void tokenize(std::string str, std::string *token_v){
+	std::cout << "Tokenizer called " << std::endl;
 	size_t start = str.find_first_not_of(" "), end = start;
+	int i = 0;
 	while (start != std::string::npos){
         // Find next occurence of delimiter
         	end = str.find(" ", start);
         // Push back the token found into vector
-                token_v.push_back(str.substr(start, end-start));
+           // token_v.push_back(str.substr(start, end-start));
+           token_v[i] = str.substr(start, end-start); 
+           i++;
         // Skip all occurences of the delimiter to find new start
         	start = str.find_first_not_of(" ", end);
     	}
